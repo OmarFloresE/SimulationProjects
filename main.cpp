@@ -9,10 +9,8 @@
 #include<ctime>
 #include<vector>
 #include<cstdlib>
-//#include<bits/stdc++.h>
 using std::vector;
 using std:: string;
-
 // So far I have mostly done a lot of data abstraction and representation. 
 // I still need to workout the basics of the game (Blackjack) logic.
 
@@ -78,10 +76,8 @@ int main()
 
     Game blackjack;
     initialize(blackjack);
-    deal_cards(blackjack);  // modify this
+    deal_cards(blackjack);
     print_game(blackjack);
-
-
 
     std::cout << "\n--- Compiled ---\n";
     return 0;
