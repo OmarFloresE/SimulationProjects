@@ -4,11 +4,11 @@
 //      Team Syntax Terror      /////////
 //      4.8.2021               //////////
 ///////////////////////////////////////////
-#include<iostream>
-#include<string>
-#include<ctime>
-#include<vector>
-#include<cstdlib>
+#include<iostream> // input output
+#include<string> // using string variables
+#include<ctime>  // rand
+#include<vector> // vectors for the struct
+#include<cstdlib> // for the rand() function
 using std::vector;
 using std:: string;
 // So far I have mostly done a lot of data abstraction and representation. 
@@ -38,9 +38,8 @@ struct Player // a struct for player which holds elements such as score and vect
 {
     vector<Card> hand; 
     string name; // Player & Dealer
-    int score;
+    int sum = 0;
 };
-
 
 struct Game // Struct of Game that brings everything together, encapsulation of data
 {
@@ -61,6 +60,10 @@ void print_hand(const vector<Card>&); // prints the cards in each players hand
 void initialize(Game&); // Starts the game and encapsulates other functions 
 void add_players(Game&); // Creates and adds players to player vector
 void print_game(const Game&); // const because when we print we don't change anything, prints game status
+void play(Game&);
+
+int get_score(Card&); // Function to get the total in every players hand 
+int get_total(vector<Card>&);
 
 
 int main()
@@ -76,10 +79,10 @@ int main()
     // print_deck(my_deck);
 
     Game blackjack; // declare blackjack from game struct
-    initialize(blackjack); 
-    deal_cards(blackjack);
-    print_game(blackjack);
-
+    //initialize(blackjack); 
+    // deal_cards(blackjack);
+    // print_game(blackjack);
+    play(blackjack);
     std::cout << "\n--- Compiled ---\n";
     return 0;
 }
@@ -196,7 +199,7 @@ void add_players(Game& game) // adds players to the game, used in initialization
     }
 }
 
-void print_game(const Game& game)
+void print_game(const Game& game) // Maybe convert everything to strings to send to a GUI
 {
     std::cout<<"________________________________\n";
     for (int player = 0; player < game.num_players; player++)
@@ -206,4 +209,73 @@ void print_game(const Game& game)
     }
     std::cout<<"________________________________\n";
     print_deck(game.deck);
+}
+
+int get_score(Card& card)
+{  // function to return total from one card, lets make a total of whole hand now using this
+    int sum;
+    if (card.rank == 0) {sum+=1; } // if statements to assign string values
+    else if (card.rank == 1) {sum+=2; }
+    else if (card.rank == 2) {sum+=3; }
+    else if (card.rank == 3) {sum+=4; }
+    else if (card.rank == 4) {sum+=5; }
+    else if (card.rank == 5) {sum+=6; }
+    else if (card.rank == 6) {sum+=7; }
+    else if (card.rank == 7) {sum+=8; }
+    else if (card.rank == 8) {sum+=9; }
+    else if (card.rank == 9) {sum+=10; }
+    else if (card.rank == 10) {sum+=10; } // Jack
+    else if (card.rank == 11) {sum+=10; } // Queen
+    else if (card.rank == 12) {sum+=10; } //King
+    else { sum += 11; } // Ace
+    return sum;
+}
+
+int get_total(vector<Card>& hand) // similar to print deck but different arguments 
+{
+    int total = 0;
+    for (Card c : hand)
+    {
+        total += get_score(c);// look at this awesome reusable function again
+    }
+    return total;
+}
+
+////////////////////////////////////////////
+
+void play(Game& game)
+{
+    initialize(game);
+    deal_cards(game);
+
+    bool game_over = false;
+    size_t dealer = 0;
+
+    while(!game_over)
+    {   
+        std::cout<< "Dealer's hand: \n";
+        print_hand(game.players[dealer].hand);
+        int dealer_total = get_total(game.players[dealer].hand);
+        std::cout<< "Dealer's total: " << dealer_total << '\n';
+
+        std::cout<< "Your hand: \n";
+        size_t player = (dealer + 1) % game.num_players;
+        print_hand(game.players[player].hand);
+        int player_total = get_total(game.players[player].hand);
+
+        std::cout<< "Player's total: " << get_total(game.players[player].hand) << '\n';
+
+        std::cout<<"\n";
+
+        if (dealer_total > player_total)
+        {
+            std::cout<<"\nThe house wins unfortunately"; 
+        }
+        else
+        {
+            std::cout<<"\nPlayer wins!";
+        }
+
+        game_over = true;
+    }
 }
